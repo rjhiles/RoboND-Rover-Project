@@ -3,6 +3,8 @@ import cv2
 
 # Identify pixels above the threshold
 # Threshold of RGB > 160 does a nice job of identifying ground pixels only
+#TODO: Update color_thresh function to take low and high threshold kwargs to
+# only have to use one function for all color manipulations
 def color_thresh(img, rgb_thresh=(160, 160, 160)):
     # Create an array of zeros same xy size as img, but single channel
     color_select = np.zeros_like(img[:,:,0])
@@ -83,9 +85,19 @@ def perception_step(Rover):
     # Perform perception steps to update Rover()
     # TODO: 
     # NOTE: camera image is coming to you in Rover.img
+    img = np.copy(Rover.img)
     # 1) Define source and destination points for perspective transform
+    source = np.float32([[14, 140], [301 ,140],[200, 96], [118, 96]])
+    destination = np.float32([[image.shape[1]/2 - dst_size, image.shape[0] - bottom_offset],
+                  [image.shape[1]/2 + dst_size, image.shape[0] - bottom_offset],
+                  [image.shape[1]/2 + dst_size, image.shape[0] - 2*dst_size - bottom_offset], 
+                  [image.shape[1]/2 - dst_size, image.shape[0] - 2*dst_size - bottom_offset],
+                  ])
     # 2) Apply perspective transform
+    warped = perspective_transform(img, source, destination)
     # 3) Apply color threshold to identify navigable terrain/obstacles/rock samples
+    
+    
     # 4) Update Rover.vision_image (this will be displayed on left side of screen)
         # Example: Rover.vision_image[:,:,0] = obstacle color-thresholded binary image
         #          Rover.vision_image[:,:,1] = rock_sample color-thresholded binary image
